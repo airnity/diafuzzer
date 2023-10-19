@@ -28,7 +28,7 @@ def unpack_frame(f):
 
   (length,) = unpack('!I', data)
 
-  data = ''
+  data = b''
   while len(data) < length:
     appended = f.recv(length-len(data))
     if len(appended) == 0:
@@ -43,7 +43,9 @@ def unpack_frame(f):
 def pack_frame(f, data):
   length = pack('!I', len(data))
 
-  f.sendall(length + data)
+  to_send = length + data
+
+  f.sendall(to_send)
 
 def load_scenario(scn, local_hostname, local_realm):
   globs = globals()
@@ -54,7 +56,7 @@ def load_scenario(scn, local_hostname, local_realm):
   globs['local_hostname'] = local_hostname
   globs['local_realm'] = local_realm
 
-  execfile(scn, globs, globs)
+  exec(open(scn).read(), globs, globs)
 
   assert('run' in globs)
 

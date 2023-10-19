@@ -7,7 +7,7 @@
 # license which can be found in the file 'LICENSE' in this package distribution.
 
 from struct import pack, unpack
-from cStringIO import StringIO
+from io import BytesIO
 import time
 import re
 from pprint import pformat
@@ -35,11 +35,11 @@ def pack24(x):
   return s[1:]
 
 def unpack24(x):
-  xp = '\x00' + x
+  xp = b'\x00' + x
   return unpack('!L', xp)[0]
 
-assert(pack24(0) == '\x00\x00\x00')
-assert(0 == unpack24('\x00\x00\x00'))
+assert(pack24(0) == b'\x00\x00\x00')
+assert(0 == unpack24(b'\x00\x00\x00'))
 
 def read_exactly(f, n):
   b = f.read(n)
@@ -161,7 +161,7 @@ class Msg:
 
   @staticmethod
   def decode(s, tag=False):
-    f = StringIO(s)
+    f = BytesIO(s)
 
     attrs = {}
 
@@ -208,9 +208,9 @@ class Msg:
     return m
 
   def encode(self):
-    f = StringIO()
+    f = BytesIO()
 
-    content = ''
+    content = b''
     for a in self.avps:
       content += a.encode()
 
@@ -422,7 +422,7 @@ class Avp:
 
   @staticmethod
   def decode(s):
-    f = StringIO(s)
+    f = BytesIO(s)
 
     attrs = {}
 
@@ -478,7 +478,7 @@ class Avp:
     return Avp(**attrs)
 
   def encode(self):
-    f = StringIO()
+    f = BytesIO()
 
     f.write(pack('!L', self.code))
 
@@ -489,9 +489,9 @@ class Avp:
     if self.reserved: flags |= self.reserved
     f.write(pack('!B', flags))
 
-    content = ''
+    content = b''
     if self.avps:
-      content = ''
+      content = b''
       for a in self.avps:
         content += a.encode()
     elif self.data:
@@ -510,11 +510,11 @@ class Avp:
       f.write(pack('!L', self.vendor))
 
     if content:
-      f.write(content)
+        f.write(content)
 
     if length % 4 != 0:
       padding = 4 - (length % 4)
-      f.write('\x00' * padding)
+      f.write(b'\x00' * padding)
 
     return f.getvalue()
 
