@@ -9,9 +9,9 @@
 import sys
 import re
 import os
-from itertools import groupby, ifilter
+from itertools import groupby
 from copy import deepcopy
-from cPickle import dump, load
+from pickle import dump, load
 
 # exceptions are self-describing
 class InvalidSectionOccurence(Exception): pass
